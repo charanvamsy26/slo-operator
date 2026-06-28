@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/charanvamsy26/slo-operator
+  tag: ""            # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+# Namespaces to watch. Empty list = all namespaces (cluster-wide).
+watchNamespaces: []
+
+# Optional live error-budget reporting. Set url to a Prometheus endpoint to
+# enable; the operator will populate .status.errorBudget on each SLO.
+prometheus:
+  url: ""
+  budgetIntervalSeconds: 300
+
+# Labels added to every generated PrometheusRule so the Prometheus Operator's
+# ruleSelector discovers them. Example: { release: kube-prometheus-stack }.
+prometheusRuleLabels: {}
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

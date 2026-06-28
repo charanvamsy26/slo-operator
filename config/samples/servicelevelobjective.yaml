@@ -1,0 +1,28 @@
+apiVersion: sre.charanvamsy.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: demo-api-availability
+  namespace: demo
+spec:
+  service: demo-api
+  # 99.9% of requests should be non-5xx over a rolling 30 days.
+  objective: 99.9
+  window: 30d
+  description: Availability SLO for the demo-api HTTP service.
+  sli:
+    events:
+      # Bad events: 5xx responses. {{.window}} is substituted per recording rule.
+      errorQuery: |
+        sum(rate(http_requests_total{service="demo-api",status=~"5.."}[{{.window}}]))
+      # Total events: all responses.
+      totalQuery: |
+        sum(rate(http_requests_total{service="demo-api"}[{{.window}}]))
+  labels:
+    team: platform
+  annotations:
+    runbook_url: https://runbooks.example.com/demo-api/availability
+  alerting:
+    pageLabels:
+      severity: critical
+    ticketLabels:
+      severity: warning

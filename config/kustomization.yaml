@@ -1,0 +1,8 @@
+# Deploy the operator with: kubectl apply -k config/
+# (Requires the Prometheus Operator CRDs, which provide PrometheusRule.)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - crd/servicelevelobjectives.yaml
+  - rbac.yaml
+  - deployment.yaml

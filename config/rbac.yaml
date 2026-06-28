@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: slo-system
+  labels:
+    app.kubernetes.io/part-of: slo-operator
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slo-operator
+  namespace: slo-system
+  labels:
+    app.kubernetes.io/name: slo-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: slo-operator
+  labels:
+    app.kubernetes.io/name: slo-operator
+rules:
+  # The ServiceLevelObjective CRs this operator owns (+ status & finalizers).
+  - apiGroups: ["sre.charanvamsy.dev"]
+    resources: ["servicelevelobjectives"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  - apiGroups: ["sre.charanvamsy.dev"]
+    resources: ["servicelevelobjectives/status"]
+    verbs: ["get", "patch", "update"]
+  # PrometheusRules generated for each SLO.
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheusrules"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # kopf needs to enumerate namespaces when watching cluster-wide.
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  # Post reconcile outcomes as Events.
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: slo-operator
+  labels:
+    app.kubernetes.io/name: slo-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: slo-operator
+subjects:
+  - kind: ServiceAccount
+    name: slo-operator
+    namespace: slo-system

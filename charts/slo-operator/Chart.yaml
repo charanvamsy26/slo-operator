@@ -1,0 +1,19 @@
+apiVersion: v2
+name: slo-operator
+description: A Kubernetes operator that compiles ServiceLevelObjective CRDs into Prometheus multi-window multi-burn-rate alerting and recording rules.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - sre
+  - slo
+  - error-budget
+  - prometheus
+  - operator
+  - kopf
+home: https://github.com/charanvamsy26/slo-operator
+sources:
+  - https://github.com/charanvamsy26/slo-operator
+maintainers:
+  - name: Guru Charan Vamsy Vardhineedi
+    url: https://github.com/charanvamsy26

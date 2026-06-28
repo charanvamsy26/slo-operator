@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slo-operator"
+version = "0.1.0"
+description = "A Kubernetes operator (kopf) that compiles ServiceLevelObjective CRDs into Prometheus multi-window multi-burn-rate alerting and recording rules."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Guru Charan Vamsy Vardhineedi" }]
+keywords = ["kubernetes", "operator", "kopf", "sre", "slo", "prometheus", "error-budget"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: System :: Monitoring",
+]
+dependencies = [
+    "kopf>=1.37,<2",
+    "kubernetes>=29",
+    "pyyaml>=6",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.urls]
+Homepage = "https://github.com/charanvamsy26/slo-operator"
+Repository = "https://github.com/charanvamsy26/slo-operator"
+
+[project.scripts]
+slo-operator = "slo_operator.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-ra"

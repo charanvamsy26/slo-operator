@@ -1,0 +1,22 @@
+slo-operator {{ .Chart.AppVersion }} installed into namespace "{{ .Release.Namespace }}".
+
+The operator is now watching {{ if .Values.watchNamespaces }}namespaces: {{ join ", " .Values.watchNamespaces }}{{ else }}all namespaces{{ end }}.
+
+1. Create a ServiceLevelObjective:
+
+   kubectl apply -f https://raw.githubusercontent.com/charanvamsy26/slo-operator/main/config/samples/servicelevelobjective.yaml
+
+2. Watch it reconcile into a PrometheusRule:
+
+   kubectl get slo -A
+   kubectl get prometheusrules -A -l app.kubernetes.io/managed-by=slo-operator
+
+{{ if not .Values.prometheus.url }}
+NOTE: live error-budget reporting is disabled. Set `prometheus.url` to a
+Prometheus endpoint to populate .status.errorBudget on each SLO.
+{{ end }}
+{{ if not .Values.prometheusRuleLabels }}
+NOTE: no `prometheusRuleLabels` set. If your Prometheus uses a ruleSelector
+(e.g. kube-prometheus-stack selects on `release`), set `prometheusRuleLabels`
+so the generated rules are picked up.
+{{ end }}

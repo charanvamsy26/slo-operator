@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slo-operator
+  namespace: slo-system
+  labels:
+    app.kubernetes.io/name: slo-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: slo-operator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: slo-operator
+    spec:
+      serviceAccountName: slo-operator
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: operator
+          image: ghcr.io/charanvamsy26/slo-operator:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            # Uncomment to enable live error-budget reporting in status:
+            # - name: SLO_PROMETHEUS_URL
+            #   value: http://prometheus-operated.monitoring.svc:9090
+            #
+            # Labels added to generated PrometheusRules so the Prometheus
+            # Operator's ruleSelector discovers them (cluster-specific):
+            # - name: SLO_PROMETHEUSRULE_LABELS
+            #   value: release=kube-prometheus-stack
+            - name: SLO_BUDGET_INTERVAL_SECONDS
+              value: "300"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - name: healthz
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
