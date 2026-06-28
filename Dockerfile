@@ -25,8 +25,9 @@ WORKDIR /app
 # Copy the installed site-packages and console scripts from the builder.
 COPY --from=builder /install /usr/local
 
-# Run as an unprivileged user.
-RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin operator
+# Run as an unprivileged user. (Note: Debian already ships a system user named
+# "operator", so we use a distinct name to avoid a UID/name collision.)
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin appuser
 USER 10001
 
 EXPOSE 8080
